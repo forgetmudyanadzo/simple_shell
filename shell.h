@@ -37,7 +37,7 @@ typedef struct built_in
 char *get_command_path(char *command, list_t **env_list);
 int execute_command(char **argv, list_t **env_list);
 char **get_path_dirs(list_t **env_list);
-/* prototypes for functions defines in unix_shell.c */
+/* prototypes for functions defines in _getenv.c */
 char *_getenv(char *name, list_t **env_list);
 int _setenv(char *name, char *value, list_t **env_list);
 int _unsetenv(char *name, list_t **env_list);
@@ -72,7 +72,7 @@ void clear_buffer(char *buffer);
 char *mem_cpy(char *dest, char *src, int n);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 int exit_shell(char **line_tok);
-/* prototypes for functions defines in shell_built-in.c */
+/* prototypes for functions defines in exit_bi.c */
 int unset_env(char **token, list_t **env_head);
 int exit_bi(char **token);
 int set_env(char **token, list_t **env_head);
