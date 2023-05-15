@@ -99,7 +99,7 @@ int _unsetenv(char *name, list_t **env_list)
 		perror(ENVIL);
 		return (1);
 	}
-	env_var = _getenv(name, ptr);
+	env_var = _getenv(name,&ptr);
 
 	if (env_var == NULL) /*variable not found*/
 	{
@@ -125,7 +125,7 @@ int delete_node(list_t **list, char *string)
 	ptr = *list; /*set a pointer to the beginning of the list*/
 
 	/*while the pointer is not NULL and the list exist*/
-	while (ptr & list)
+	while(ptr && list)
 	{
 		/*if the current node's string matches the input string*/
 		if (_strcmp(ptr->str, string) == 0)

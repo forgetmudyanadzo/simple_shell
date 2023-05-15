@@ -135,4 +135,4 @@ list_t *get_node(list_t **head, char *str)
 		current_node = current_node->next;
 	}
 	return (NULL);
-
+}
