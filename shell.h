@@ -34,6 +34,7 @@ typedef struct built_in
 	int (*f)();
 } builtin_t;
 /* prototypes for functions defines in shell_path.c */
+void puts_half(char *str);
 char *get_command_path(char *command, list_t **env_list);
 int execute_command(char **argv, list_t **env_list);
 char **get_path_dirs(list_t **env_list);
