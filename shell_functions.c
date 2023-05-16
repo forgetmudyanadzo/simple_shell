@@ -1,74 +1,145 @@
 #include "shell.h"
 
 /**
- * _putchar - writes a character to the standard output stream
- * @c: the charcter to be written
- * Return: On success, 1. On error, -1 is returned and errno is set
+ * _getline - prints "$" and wait for user to enter command
+ * and print it on the next line
+ * @input: pointer to buffer to store input
+ * @size: size of the buffer
+ * struct stat: structure to hold file status
+ * Return: Number of characters read, or -1 if _realloc fails
  */
 
-int _putchar(char c)
+int _getline(char *input, int size)
 {
-	/*writes the character c to the stdout*/
-	return (write(1, &c, 1));
+	int index; /*index for traversing buffer*/
+	int readval; /*value returned by read()*/
+	struct stat sb;/*structure to hold file status*/
+
+	if (fstat(STDIN_FILENO, &sb) == -1)
+	{
+
+		perror("fstat");
+		exit(-1);
+	}
+
+/*check if the input is coming from a pipe*/
+
+	if ((sb.st_mode & S_IFMT) != S_IFIFO)
+		_strprint(PROMPT);
+	for (index = 0; index < size - 1; index++)
+	{
+/*Read one character*/
+		readval = read(STDIN_FILENO, (input + index), 1);
+		if (readval == 0)
+			return (-1); /* End Of File*/
+		if (input[index] == '\n')
+			break;
+	}
+
+/*Terminate the string*/
+	input[index] = '\0';
+	return (index);
 }
 
 /**
- * _strprint - writes a string to the standard output strem
- * @str: the string to be written
- * Return: void
+ * exit_shell - checks if the user has enter "exit" and returns 1 if so
+ * @line_tok: pointer to tokenized input
+ * Return: 1 if user entered "exit", 0 otherwise
  */
 
-void _strprint(char *str)
+int exit_shell(char **line_tok)
 {
-	write(1, str, _strlen(str));/*writes the string to stdout*/
+	int cmp, end_len, first_tok_len, size;
+
+	size = arr_size(line_tok) < 3;/*Check if there are too many arguments*/
+	cmp = strncmp(line_tok[0], END, _strlen(END));
+/*Compare the first token to "exit"*/
+	end_len = strlen(END);
+	first_tok_len = _strlen(line_tok[0]);
+/*Check if the first token is "exit" and there are no extra arguments*/
+	if (cmp == 0 && end_len == first_tok_len && size)
+		return (1);
+	return (0);
+
 }
 
 /**
- * print_array - prints an array of strings to the standard output stream
- * @array: the array of strings to be pointed
- * Return: Void
+ * clear_buffer - Sets all the characters in a buffer to 0
+ * @buffer: pointer to buffer to clear
+ * Return: nothing
  */
 
-void print_array(char **array)
+void clear_buffer(char *buffer)
 {
 	int index;
 
-	/*checks if the array or its first element is NULL*/
-	if (!array || !(*array))
-	{
-		/*prints an error message to stderr using perror*/
-		perror(WRONG);
-		return;
-	}
-	/*loops through the array until a NULL pointer is found*/
-	for (index = 0; array[index] != NULL; ++index)
-	{
-		_strprint(array[index]);/*prints the current string in the array*/
-		_putchar('\n');/*prints a newline character to stdout*/
-	}
+	for (index = 0; index < BUFF_SIZE; index++)
+		buffer[index] = 0;
 }
 
 /**
- * print_list - prints each string in a linked list to the
- * standard output stream
- * @head: a pointer to the head of the linked list
- * Return: the number of the elements in the list
+ * mem_cpy - copies n bytes of memory from src to dest
+ * @dest: pointer to destination memory
+ * @src: pointer to source memory
+ * @n: number of bytes to copy
+ * Return: Pointer to dest
  */
 
-size_t print_list(list_t *head)
+char *mem_cpy(char *dest, char *src, int n)
 {
-	size_t size = 0;/*size_t is an unsigned integer type used for sizes*/
+	int index;
 
-	if (head == NULL)/*checks if the list is empty*/
-		return (0);
-
-	/*loops through the list until a NULL pointer is found*/
-	while (head != NULL)
+	for (index = 0; index < n - 1; index++)
 	{
-		_strprint(head->str);/*prints the current string in the list*/
-		_putchar('\n');/*prints a newline character to stdout*/
-		head = head->next;/*moves to the next node in the list*/
-		size++;/*increments the size count*/
+		*(dest + index) = *(src + index);
 	}
-	return (size);/*returns the number of elements in the list*/
+	*(dest + index) = '\0';
+	return (dest);
+}
+
+/**
+ * _realloc - reallocates a memory block
+ * @ptr: pointer to the old memory
+ * @old_size: size for old memory block
+ * @new_size: size of the new memory location
+ * Return: returns pointer to a new memory location
+ */
+
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
+{
+	char *new_array, *helper;
+	unsigned int index;
+
+	if (old_size == new_size)
+		return (ptr);
+	if (new_size == 0 && ptr != NULL)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	if (ptr == NULL)
+	{
+		new_array = malloc(new_size);
+		if (new_array == NULL)
+			return (NULL);
+		return (new_array);
+	}
+	new_array = malloc(sizeof(char) * new_size);
+	if (new_array == NULL)
+		return (NULL);
+	if (new_size > old_size && old_size != 0)
+	{
+		helper = ptr;
+		for (index = 0; index < old_size; index++)
+			new_array[index] = helper[index];
+		free(ptr);
+	}
+	if (new_size < old_size)
+	{
+		helper = ptr;
+		for (index = 0; index < new_size; index++)
+			new_array[index] = helper[index];
+		free(ptr);
+	}
+	return (new_array);
 }
