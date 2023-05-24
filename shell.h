@@ -21,6 +21,13 @@
 #define ENOMEM "Out of memory"
 #define END "exit"
 /*define a structure for a singly linked list node*/
+/**
+ * struct list_s - the singly linked list
+ * @str: string - (malloc string)
+ * @len: the length of a string
+ * @next: the next node
+ * Description: node structure for singly linked list
+ */
 typedef struct list_s
 {
 	struct list_s *next;
@@ -28,6 +35,11 @@ typedef struct list_s
 	char *str;
 } list_t;
 /*define a structure to hold the built-in*/
+/**
+ * struct built_in - all builtins list
+ * @bi: specifier
+ * @f: functions associated in printing
+ */
 typedef struct built_in
 {
 	char *bi;

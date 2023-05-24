@@ -5,7 +5,6 @@
  * and print it on the next line
  * @input: pointer to buffer to store input
  * @size: size of the buffer
- * struct stat: structure to hold file status
  * Return: Number of characters read, or -1 if _realloc fails
  */
 
@@ -13,7 +12,7 @@ int _getline(char *input, int size)
 {
 	int index; /*index for traversing buffer*/
 	int readval; /*value returned by read()*/
-	struct stat sb;/*structure to hold file status*/
+	struct stat sb;
 
 	if (fstat(STDIN_FILENO, &sb) == -1)
 	{
